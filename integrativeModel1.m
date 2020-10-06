@@ -1,14 +1,19 @@
 % Integrative model for Lara
 
-lambdaKArray = 2.^(0:0.25:1);
-lambdaZArray = 2.^(-1:0.25:0);
+lambdaKArray = 2.^(0:0.1:1);
+lambdaZArray = 2.^(-1:0.1:0);
 
-paramArray = lambdaZArray;
+paramArray = lambdaKArray;
 
-kF0Array = logspace(-6,4,100);
+kF0Array = logspace(-6,4,1000);
 
 PSSArray = zeros(numel(kF0Array),numel(paramArray));
 ZSSArray = zeros(numel(kF0Array),numel(paramArray));
+
+
+nH_Z_Array = zeros(0,numel(paramArray));
+nH_P_Array = zeros(0,numel(paramArray));
+
 
 for iParam=1:numel(paramArray) % loop through parameter
     
@@ -22,8 +27,8 @@ for iParam=1:numel(paramArray) % loop through parameter
         
         N = 10; % number of sites
         
-        lambdaK = 1;%lambdaKArray(iParam);%1;
-        lambdaZ = lambdaZArray(iParam);%1;
+        lambdaK = lambdaKArray(iParam);%1;
+        lambdaZ = 1;%1;%lambdaZArray(iParam);%1;
         
         % system
         
@@ -49,16 +54,28 @@ for iParam=1:numel(paramArray) % loop through parameter
     end % finished loop through KP doses
     
     % Compute Hill
-    
     KPRatioArray = kK0./kF0Array;
     
-    log(KPRatioArray);
-    log(PSSArray);
-    log(ZSSArray);
+    if(any(diff(PSSArray(:,iParam))>0.001))
+        nH_P_Array(iParam) = -1; % set to -1 if it's nonmonotonic increasing.
+    else
+        nH_P_Array(iParam) = max(diff(log(PSSArray(:,iParam)./(N-PSSArray(:,iParam))))./diff(log(KPRatioArray')));
+
+    end
+    
+    if(any(diff(ZSSArray(:,iParam))>0.001))
+        nH_Z_Array(iParam) = -1;  % set to -1 if it's nonmonotonic increasing.
+    else
+        nH_Z_Array(iParam) = max(diff(log(ZSSArray(:,iParam)./(N-ZSSArray(:,iParam))))./diff(log(KPRatioArray')));
+    end
+    
+    
     
 end % finished sweep through params
 
 %%
+
+% Dose response curves
 
 figure(2); clf;
 subplot(2,1,1); hold on; box on;
@@ -75,4 +92,19 @@ set(gca,'xscale','log');
 ylabel('Number of ZAP70 bound (out of 10)')
 xlabel('Kinase Phosphatase ratio (ratio of intrinsic rate)');
 
+% Hill coefficients
 
+figure(3); %clf;
+subplot(2,1,1); hold on; box on;
+plot(paramArray, nH_P_Array,'d-');
+set(gca,'xscale','log');
+ylabel('Phosphorylation Hill coefficient');
+xlabel('lambda')
+
+subplot(2,1,2); hold on; box on;
+plot(paramArray, nH_Z_Array,'d-');
+set(gca,'xscale','log');
+ylabel('ZAP70 binding Hill coefficient');
+xlabel('lambda');
+
+set(gca,'ylim', [-1,10])
