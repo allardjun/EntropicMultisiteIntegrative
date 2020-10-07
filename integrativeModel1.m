@@ -61,6 +61,30 @@ for iParam=1:numel(paramArray) % loop through parameter
     else
         nH_P_Array(iParam) = max(diff(log(PSSArray(:,iParam)./(N-PSSArray(:,iParam))))./...
             diff(log(KPRatioArray')));
+            
+            
+% legacy code from polymer-c analysis
+%             % compute slope
+%             diffy = diff(log10((avgSteadyState(domainStart:domainEnd))./(1-avgSteadyState(domainStart:domainEnd))));
+%             diffx = diff(log10(kinaseIntrinsicRate(domainStart:domainEnd)));
+%             slope = diffy./diffx;
+
+%             % previous, alternate methods
+%             %diffy = diff(movmean(log10((avgSteadyState(domainStart:domainEnd))./(1-avgSteadyState(domainStart:domainEnd))),3));
+%             %diffy = diff((log10((avgSteadyState(domainStart:domainEnd))./(1-avgSteadyState(domainStart:domainEnd)))));
+
+%             % fit slopes to cubic
+%             fit = polyfit(log10(kinaseIntrinsicRate(domainStart+1:domainEnd)),slope,3);
+%             slope_fit = polyval(fit,log10(kinaseIntrinsicRate(domainStart+1:domainEnd)));
+
+%             % calculate sum of squared residuals and rmse
+%             SSR = sum((slope_fit-slope).^2)
+%             slope_rmse = sqrt(SSR./length(slope))
+
+%             % set max slope and error
+%             HillCoeffMaxSlope = max(slope_fit);
+%             HillCoeffMaxSlope_std = slope_rmse;
+
 
     end
     
