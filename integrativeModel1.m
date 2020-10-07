@@ -100,12 +100,14 @@ figure(3); %clf;
 subplot(2,1,1); hold on; box on;
 plot(paramArray, nH_P_Array,'d-');
 set(gca,'xscale','log');
+set(gca,'yscale','log');
 ylabel('Phosphorylation Hill coefficient');
 xlabel('lambda')
 
 subplot(2,1,2); hold on; box on;
 plot(paramArray, nH_Z_Array,'d-');
 set(gca,'xscale','log');
+set(gca,'yscale','log');
 ylabel('ZAP70 binding Hill coefficient');
 xlabel('lambda');
 
