@@ -1,11 +1,11 @@
 % Integrative model for Lara
 
 lambdaKArray = 2.^(0:0.1:1);
-lambdaZArray = 2.^(-1:0.1:0);
+lambdaZArray = 2.^(-2:0.1:0);
 
-paramArray = lambdaKArray;
+paramArray = lambdaZArray;
 
-kF0Array = logspace(-6,4,100);
+kF0Array = logspace(-5,5,400);
 
 PSSArray = zeros(numel(kF0Array),numel(paramArray));
 ZSSArray = zeros(numel(kF0Array),numel(paramArray));
@@ -14,6 +14,8 @@ ZSSArray = zeros(numel(kF0Array),numel(paramArray));
 nH_Z_Array = zeros(0,numel(paramArray));
 nH_P_Array = zeros(0,numel(paramArray));
 
+figure(4);clf(4);
+figure(5);clf(5);
 
 for iParam=1:numel(paramArray) % loop through parameter
     
@@ -27,8 +29,8 @@ for iParam=1:numel(paramArray) % loop through parameter
         
         N = 10; % number of sites
         
-        lambdaK = lambdaKArray(iParam);%1;
-        lambdaZ = 1;%1;%lambdaZArray(iParam);%1;
+        lambdaK = 1.3;%lambdaKArray(iParam);%1;
+        lambdaZ = lambdaZArray(iParam);%1;
         
         % system
         
@@ -37,7 +39,7 @@ for iParam=1:numel(paramArray) % loop through parameter
         
         %dnPdt =@(nP,nZ) kK0*lambdaK.^nP.*lambdaZ.^nZ.*(N-nP) - kF0*(nP-nZ); % CONSTANT DEPHOSPHORYLATION RATE
         
-        [T,X] = ode15s( @(t,x)[dnPdt(x(1),x(2));dnZdt(x(1),x(2))], [0,1e3], [0,0]);
+        [T,X] = ode23s( @(t,x)[dnPdt(x(1),x(2));dnZdt(x(1),x(2))], [0,1e3], [0,0]);
         
         if(0)
             figure(1); %clf;
@@ -59,9 +61,55 @@ for iParam=1:numel(paramArray) % loop through parameter
     if(any(diff(PSSArray(:,iParam))>0.001))
         nH_P_Array(iParam) = -1; % set to -1 if it's nonmonotonic increasing.
     else
-        nH_P_Array(iParam) = max(diff(log(PSSArray(:,iParam)./(N-PSSArray(:,iParam))))./...
-            diff(log(KPRatioArray')));
-
+                
+        [nHill_finiteDifference, indexMax] = max(diff(log(PSSArray(:,iParam)./(N-PSSArray(:,iParam))))./diff(log(KPRatioArray')));
+        
+        if nHill_finiteDifference > 1.001
+            domainStart = max(1,indexMax-10);
+            if indexMax == 1
+                domainEnd = 6;
+            else
+                domainEnd = indexMax+10;
+            end
+            
+            y = log(PSSArray(:,iParam)./(N-PSSArray(:,iParam)));
+            x = log(KPRatioArray');
+            diffx = diff(x(domainStart:domainEnd));
+            diffy = diff(y(domainStart:domainEnd));
+            slope = diffy./diffx;
+            
+            fit = polyfit(x(domainStart:domainEnd-1),slope,3);
+            slope_fit = polyval(fit,x(domainStart:domainEnd-1));
+            HillCoeffMaxSlope = max(slope_fit);
+            
+            nH_P_Array(iParam) = HillCoeffMaxSlope;
+            
+            figure(5); hold on;
+            subplot(4,1,1);hold on;
+            plot(KPRatioArray,PSSArray(:,iParam))
+            set(gca,'xscale','log');
+            
+            subplot(4,1,2);hold on;
+            plot(KPRatioArray,PSSArray(:,iParam)./(N-PSSArray(:,iParam)))
+            set(gca,'xscale','log','yscale','log');
+            
+            subplot(4,1,3);hold on;
+            plot(x,y)
+            
+            subplot(4,1,4);hold on;
+            plot(x(1:end-1),diff(y)./diff(x))
+         
+            
+            figure(4); hold on;
+            plot(x(domainStart:domainEnd-1), slope,'s')
+            plot(x(domainStart:domainEnd-1), slope_fit,'-');
+            
+            drawnow;
+            
+        else
+            nH_P_Array(iParam) = 1;
+        end
+               
     end
     
     if(any(diff(ZSSArray(:,iParam))>0.001))
@@ -100,13 +148,15 @@ figure(3); %clf;
 subplot(2,1,1); hold on; box on;
 plot(paramArray, nH_P_Array,'d-');
 set(gca,'xscale','log');
+%set(gca,'yscale','log');
 ylabel('Phosphorylation Hill coefficient');
 xlabel('lambda')
 
 subplot(2,1,2); hold on; box on;
 plot(paramArray, nH_Z_Array,'d-');
 set(gca,'xscale','log');
+%set(gca,'yscale','log');
 ylabel('ZAP70 binding Hill coefficient');
 xlabel('lambda');
 
-set(gca,'ylim', [-1,10])
+%set(gca,'ylim', [-1,10])
