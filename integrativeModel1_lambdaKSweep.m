@@ -67,8 +67,11 @@ for iParamOuter=1:numel(paramOuterArray)
             nH_P_Array(iParam,iParamOuter) = -1; % set to -1 if it's nonmonotonic increasing.
         else
             
-            [nHill_finiteDifference, indexMax] = max(diff(log(PSSArray(:,iParam)./(N-PSSArray(:,iParam))))./diff(log(KPRatioArray')));
+            % quick and dirty nHill using finite differences
+            [nHill_finiteDifference, indexMax] = max(diff(log(PSSArray(:,iParam)./(N-PSSArray(:,iParam))))./...
+                diff(log(KPRatioArray')));
             
+            % if it's not 1, then fit cubic to derivative
             if nHill_finiteDifference > 1.001
                 domainStart = max(1,indexMax-5);
                 if indexMax == 1
@@ -89,8 +92,11 @@ for iParamOuter=1:numel(paramOuterArray)
                 
                 nH_P_Array(iParam,iParamOuter) = HillCoeffMaxSlope;
                 
-                if (1); % plots for debugging the Hill coefficient calculator
-                    
+                if max(abs(slope_fit-slope))>0.1*(max(slope_fit)-min(slope_fit))
+                    display('Cubic fit inaccuracy!');
+                end
+                
+                if (1) % plots for debugging the Hill coefficient calculator
                     figure(5); hold on;
                     subplot(4,1,1);hold on;
                     plot(KPRatioArray,PSSArray(:,iParam))
@@ -105,8 +111,7 @@ for iParamOuter=1:numel(paramOuterArray)
                     
                     subplot(4,1,4);hold on;
                     plot(x(1:end-1),diff(y)./diff(x))
-                    
-                    
+                                        
                     figure(4); hold on;
                     plot(x(domainStart:domainEnd-1), slope,'s')
                     plot(x(domainStart:domainEnd-1), slope_fit,'-');
