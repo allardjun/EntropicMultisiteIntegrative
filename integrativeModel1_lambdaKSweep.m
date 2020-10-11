@@ -15,6 +15,9 @@ ZSSArray = zeros(numel(kF0Array),numel(paramArray));
 nH_Z_Array = zeros(numel(paramArray),numel(paramOuterArray));
 nH_P_Array = zeros(numel(paramArray),numel(paramOuterArray));
 
+nH_thresh_Z_Array = zeros(numel(paramArray),numel(paramOuterArray));
+nH_thresh_P_Array = zeros(numel(paramArray),numel(paramOuterArray));
+
 figure(4);clf(4);
 figure(5);clf(5);
 
@@ -132,7 +135,25 @@ for iParamOuter=1:numel(paramOuterArray)
                 diff(log(KPRatioArray')));
         end
         
+        % threshold definition of hill
         
+        [~, iDoseTmp] = min((0.1-ZSSArray(:,iParam)/N).^2); 
+        EC10 = KPRatioArray(iDoseTmp); 
+        [~, iDoseTmp] = min((0.5-ZSSArray(:,iParam)/N).^2);
+        EC50 = KPRatioArray(iDoseTmp);
+        [~, iDoseTmp] = min((0.9-ZSSArray(:,iParam)/N).^2); 
+        EC90 = KPRatioArray(iDoseTmp);
+        
+        nH_thresh_Z_Array(iParam,iParamOuter) = log10(81)/log10(EC90/EC10);
+        
+        [~, iDoseTmp] = min((0.1-PSSArray(:,iParam)/N).^2);
+        EC10 = KPRatioArray(iDoseTmp); 
+        [~, iDoseTmp] = min((0.5-PSSArray(:,iParam)/N).^2);
+        EC50 = KPRatioArray(iDoseTmp);
+        [~, iDoseTmp] = min((0.9-PSSArray(:,iParam)/N).^2); 
+        EC90 = KPRatioArray(iDoseTmp);
+        
+        nH_thresh_P_Array(iParam,iParamOuter) = log10(81)/log10(EC90/EC10);
         
     end % finished sweep through params
     
@@ -159,7 +180,7 @@ for iParamOuter=1:numel(paramOuterArray)
 end % finished sweep through outer params
 
 
-% Hill coefficients
+%% Hill coefficients
 
 figure(31); %clf;
 subplot(2,1,1); hold on; box on;
@@ -174,6 +195,25 @@ plot(paramArray, nH_Z_Array,'d-');
 set(gca,'xscale','log');
 set(gca,'yscale','log');
 ylabel('ZAP70 binding Hill coefficient');
+xlabel('lambda K');
+
+
+figure(61); %clf;
+subplot(2,1,1); hold on; box on;
+plot(paramArray, nH_thresh_P_Array,'d-');
+set(gca,'xscale','log');
+set(gca,'yscale','log');
+ylabel('Phosphorylation Hill coefficient (thresh/EC defn)');
+xlabel('lambda K')
+set(gca,'ylim',[2^-1,2^4]);
+
+line(paramArray, 0*paramArray, 'Color', 'k', 'LineWidth', 2);
+
+subplot(2,1,2); hold on; box on;
+plot(paramArray, nH_thresh_Z_Array,'d-');
+set(gca,'xscale','log');
+set(gca,'yscale','log');
+ylabel('ZAP70 binding Hill coefficient (thresh/EC defn)');
 xlabel('lambda K');
 
 %set(gca,'ylim', [-1,10])

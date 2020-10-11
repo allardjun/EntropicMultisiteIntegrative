@@ -15,6 +15,9 @@ ZSSArray = zeros(numel(kF0Array),numel(paramArray));
 nH_Z_Array = zeros(numel(paramArray),numel(paramOuterArray));
 nH_P_Array = zeros(numel(paramArray),numel(paramOuterArray));
 
+nH_thresh_Z_Array = zeros(numel(paramArray),numel(paramOuterArray));
+nH_thresh_P_Array = zeros(numel(paramArray),numel(paramOuterArray));
+
 figure(4);clf(4);
 figure(5);clf(5);
 
@@ -67,8 +70,11 @@ for iParamOuter=1:numel(paramOuterArray)
             nH_P_Array(iParam,iParamOuter) = -1; % set to -1 if it's nonmonotonic increasing.
         else
             
-            [nHill_finiteDifference, indexMax] = max(diff(log(PSSArray(:,iParam)./(N-PSSArray(:,iParam))))./diff(log(KPRatioArray')));
+            % quick and dirty nHill using finite differences
+            [nHill_finiteDifference, indexMax] = max(diff(log(PSSArray(:,iParam)./(N-PSSArray(:,iParam))))./...
+                diff(log(KPRatioArray')));
             
+            % if it's not 1, then fit cubic to derivative
             if nHill_finiteDifference > 1.001
                 domainStart = max(1,indexMax-5);
                 if indexMax == 1
@@ -89,8 +95,11 @@ for iParamOuter=1:numel(paramOuterArray)
                 
                 nH_P_Array(iParam,iParamOuter) = HillCoeffMaxSlope;
                 
-                if (1); % plots for debugging the Hill coefficient calculator
-                    
+                if max(abs(slope_fit-slope))>0.1*(max(slope_fit)-min(slope_fit))
+                    display('Cubic fit inaccuracy!');
+                end
+                
+                if (1) % plots for debugging the Hill coefficient calculator
                     figure(5); hold on;
                     subplot(4,1,1);hold on;
                     plot(KPRatioArray,PSSArray(:,iParam))
@@ -105,8 +114,7 @@ for iParamOuter=1:numel(paramOuterArray)
                     
                     subplot(4,1,4);hold on;
                     plot(x(1:end-1),diff(y)./diff(x))
-                    
-                    
+                                        
                     figure(4); hold on;
                     plot(x(domainStart:domainEnd-1), slope,'s')
                     plot(x(domainStart:domainEnd-1), slope_fit,'-');
@@ -127,7 +135,25 @@ for iParamOuter=1:numel(paramOuterArray)
                 diff(log(KPRatioArray')));
         end
         
+        % threshold definition of hill
         
+        [~, iDoseTmp] = min((0.1-ZSSArray(:,iParam)/N).^2); 
+        EC10 = KPRatioArray(iDoseTmp); 
+        [~, iDoseTmp] = min((0.5-ZSSArray(:,iParam)/N).^2);
+        EC50 = KPRatioArray(iDoseTmp);
+        [~, iDoseTmp] = min((0.9-ZSSArray(:,iParam)/N).^2); 
+        EC90 = KPRatioArray(iDoseTmp);
+        
+        nH_thresh_Z_Array(iParam,iParamOuter) = log10(81)/log10(EC90/EC50);
+        
+        [~, iDoseTmp] = min((0.1-PSSArray(:,iParam)/N).^2);
+        EC10 = KPRatioArray(iDoseTmp); 
+        [~, iDoseTmp] = min((0.5-PSSArray(:,iParam)/N).^2);
+        EC50 = KPRatioArray(iDoseTmp);
+        [~, iDoseTmp] = min((0.9-PSSArray(:,iParam)/N).^2); 
+        EC90 = KPRatioArray(iDoseTmp);
+        
+        nH_thresh_P_Array(iParam,iParamOuter) = log10(81)/log10(EC90/EC50);
         
     end % finished sweep through params
     
@@ -154,7 +180,7 @@ for iParamOuter=1:numel(paramOuterArray)
 end % finished sweep through outer params
 
 
-% Hill coefficients
+%% Hill coefficients
 
 figure(31); %clf;
 subplot(2,1,1); hold on; box on;
@@ -169,6 +195,25 @@ plot(paramArray, nH_Z_Array,'d-');
 set(gca,'xscale','log');
 set(gca,'yscale','log');
 ylabel('ZAP70 binding Hill coefficient');
+xlabel('lambda K');
+
+
+figure(61); %clf;
+subplot(2,1,1); hold on; box on;
+plot(paramArray, nH_thresh_P_Array,'d-');
+set(gca,'xscale','log');
+set(gca,'yscale','log');
+ylabel('Phosphorylation Hill coefficient (thresh/EC defn)');
+xlabel('lambda K')
+set(gca,'ylim',[2e-1,2e4]);
+
+line(xlim, [0,0], 'Color', 'k', 'LineWidth', 2);
+
+subplot(2,1,2); hold on; box on;
+plot(paramArray, nH_thresh_Z_Array,'d-');
+set(gca,'xscale','log');
+set(gca,'yscale','log');
+ylabel('ZAP70 binding Hill coefficient (thresh/EC defn)');
 xlabel('lambda K');
 
 %set(gca,'ylim', [-1,10])
