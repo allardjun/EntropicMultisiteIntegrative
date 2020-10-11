@@ -198,18 +198,19 @@ ylabel('ZAP70 binding Hill coefficient');
 xlabel('lambda K');
 
 
-figure(61); %clf;
+figure(61); clf;
 subplot(2,1,1); hold on; box on;
+plot(paramArray, ones(size(paramArray)), '-k', 'LineWidth', 1);
 plot(paramArray, nH_thresh_P_Array,'d-');
 set(gca,'xscale','log');
 set(gca,'yscale','log');
 ylabel('Phosphorylation Hill coefficient (thresh/EC defn)');
 xlabel('lambda K')
-set(gca,'ylim',[2^-1,2^4]);
+set(gca,'ylim',[2^-1,2^3],'ytick',[0.5 1 2 4 8]);
 
-line(paramArray, 0*paramArray, 'Color', 'k', 'LineWidth', 2);
 
 subplot(2,1,2); hold on; box on;
+plot(paramArray, ones(size(paramArray)), '-k', 'LineWidth', 1);
 plot(paramArray, nH_thresh_Z_Array,'d-');
 set(gca,'xscale','log');
 set(gca,'yscale','log');
