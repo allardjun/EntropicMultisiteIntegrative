@@ -1,6 +1,6 @@
 % Integrative model for Lara
 
-lambdaKArray = 1:0.05:1.5;
+lambdaKArray = 1:0.05:2.0;%1.5;
 lambdaZArray = 1.0:-0.1:0.5;
 
 paramArray = lambdaKArray;
@@ -137,20 +137,20 @@ for iParamOuter=1:numel(paramOuterArray)
         
         % threshold definition of hill
         
-        [~, iDoseTmp] = min((0.1-ZSSArray(:,iParam)/N).^2); 
+        [~, iDoseTmp] = min((0.1-ZSSArray(:,iParam)/ZSSArray(1,iParam)).^2); 
         EC10 = KPRatioArray(iDoseTmp); 
-        [~, iDoseTmp] = min((0.5-ZSSArray(:,iParam)/N).^2);
+        [~, iDoseTmp] = min((0.5-ZSSArray(:,iParam)/ZSSArray(1,iParam)).^2);
         EC50 = KPRatioArray(iDoseTmp);
-        [~, iDoseTmp] = min((0.9-ZSSArray(:,iParam)/N).^2); 
+        [~, iDoseTmp] = min((0.9-ZSSArray(:,iParam)/ZSSArray(1,iParam)).^2); 
         EC90 = KPRatioArray(iDoseTmp);
         
         nH_thresh_Z_Array(iParam,iParamOuter) = log10(81)/log10(EC90/EC10);
         
-        [~, iDoseTmp] = min((0.1-PSSArray(:,iParam)/N).^2);
+        [~, iDoseTmp] = min((0.1-PSSArray(:,iParam)/PSSArray(1,iParam)).^2);
         EC10 = KPRatioArray(iDoseTmp); 
-        [~, iDoseTmp] = min((0.5-PSSArray(:,iParam)/N).^2);
+        [~, iDoseTmp] = min((0.5-PSSArray(:,iParam)/PSSArray(1,iParam)).^2);
         EC50 = KPRatioArray(iDoseTmp);
-        [~, iDoseTmp] = min((0.9-PSSArray(:,iParam)/N).^2); 
+        [~, iDoseTmp] = min((0.9-PSSArray(:,iParam)/PSSArray(1,iParam)).^2); 
         EC90 = KPRatioArray(iDoseTmp);
         
         nH_thresh_P_Array(iParam,iParamOuter) = log10(81)/log10(EC90/EC10);
@@ -216,5 +216,6 @@ set(gca,'xscale','log');
 set(gca,'yscale','log');
 ylabel('ZAP70 binding Hill coefficient (thresh/EC defn)');
 xlabel('lambda K');
+set(gca,'ylim',[2^-1,2^3],'ytick',[0.5 1 2 4 8]);
 
 %set(gca,'ylim', [-1,10])
