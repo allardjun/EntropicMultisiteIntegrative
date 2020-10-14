@@ -1,9 +1,9 @@
 % Integrative model for Lara
 
-lambdaKArray = 1:0.05:2.0;%1.5;
+lambdaKArray = 1:0.05:2.0;
 lambdaZArray = 1.0:-0.1:0.5;
 
-paramArray      = lambdaKArray;
+paramArray      = lambdaZArray;
 %paramOuterArray = lambdaZArray; % NOT USED
 
 kF0Array = logspace(-5,5,800); % need about 800 for lambdaK big
@@ -19,13 +19,12 @@ ZSSArray          = zeros(numel(kF0Array),numel(paramArray));
 %figure(4);clf(4);
 %figure(5);clf(5);
 
-figure(21);clf(21);
+figure(31);clf(31);
 
 iParamOuter=1;
 
 if(1) % option whether or not to perform simulation
-    
-    
+        
     for iParam=1:numel(paramArray) % loop through parameter
         
         for iDose=1:numel(kF0Array) % loop through KP doses
@@ -38,8 +37,8 @@ if(1) % option whether or not to perform simulation
             
             N = 10; % number of sites
             
-            lambdaK = lambdaKArray(iParam);%1;
-            lambdaZ = lambdaZArray(iParamOuter);%1;
+            lambdaK = 1.2;%lambdaKArray(iParamOuter);%1;
+            lambdaZ = lambdaZArray(iParam);%1;
             
             % system
             
@@ -160,18 +159,18 @@ if(1) % option whether or not to perform simulation
     end % finished sweep through params
     
     
-    save('integrativeModel_lambdaKSweep.mat');
+    save('integrativeModel_lambdaZSweep.mat');
     
 end % if statement to prevent simulation, just for plot generation
 
 %%
 
-load('integrativeModel_lambdaKSweep.mat');
+load('integrativeModel_lambdaZSweep.mat');
 
 % Dose response curves
 
 
-figure(21); clf;
+figure(31); clf;
 subplot(2,1,1); hold on; box on;
 plot(KPRatioArray, PSSArray);
 set(gca,'xscale','log');
@@ -189,13 +188,14 @@ xlabel('Kinase Phosphatase ratio (ratio of intrinsic rate)');
 
 % --- RENDER ------
 
-skip = 4;
+skip = 1;
 
-figure(101); clf;
+
+figure(104); clf;
 
 subplot(2,1,1); hold on; box on;
 
-title('Sweep over \lambda_K>1, with \lambda_Z=1')
+title('Sweep over \lambda_Z<1, with \lambda_K=1.2')
 
 plot(KPRatioArray, PSSArray(:,1:skip:end));
 set(gca,'xscale','log');

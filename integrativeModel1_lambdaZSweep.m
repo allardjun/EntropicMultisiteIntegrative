@@ -37,7 +37,7 @@ if(1) % option whether or not to perform simulation
             
             N = 10; % number of sites
             
-            lambdaK = lambdaKArray(iParamOuter);%1;
+            lambdaK = 1;%lambdaKArray(iParamOuter);%1;
             lambdaZ = lambdaZArray(iParam);%1;
             
             % system
