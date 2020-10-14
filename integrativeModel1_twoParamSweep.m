@@ -21,7 +21,7 @@ nH_thresh_P_Array = zeros(numel(paramArray),numel(paramOuterArray));
 
 figure(31);clf(31);
 
-if(1) % option whether or not to perform simulation
+if(0) % option whether or not to perform simulation
     
     for iParamOuter=1:numel(paramOuterArray)
         
