@@ -232,12 +232,25 @@ set(gca,'ylim',[2^-1,2^3],'ytick',[0.5 1 2 4 8]);
 
 % --- RENDER -----
 
+
+stupid = 2;
+colours= hot(numel(paramOuterArray)+2*stupid); 
+colours = colours((stupid+1):(end-stupid),:);
+
 % --- EC ratio definition  -----
 figure(103); clf; hold on; box on;
 plot(paramArray, ones(size(paramArray)), '-k', 'LineWidth', 1);
-plot(paramArray, nH_thresh_P_Array,'d-');
+for iParamOuter=1:numel(paramOuterArray)
+    plot(paramArray, nH_thresh_P_Array(:,iParamOuter),'ok-','markerfacecolor',colours(iParamOuter,:),'markersize',7,'linewidth',1.5);
+end
 set(gca,'xscale','log');
 set(gca,'yscale','log');
-ylabel('Phosphorylation Hill coefficient (thresh/EC defn) (log scale)');
-xlabel('Rate enhancement \lambda_K (log scale)')
+ylabel1 = ('Phosphorylation Hill coefficient (thresh/EC defn) (log scale)');
+xlabel1 = ('Rate enhancement \lambda_K (log scale)');
 set(gca,'ylim',[2^-1,2^3],'ytick',[0.5 1 2 4 8]);
+
+pos = get(gcf, 'position');
+set(gcf,'units','centimeters','position',[pos(1),pos(2),15,12]);
+set(gca,'FontName','Arial','FontSize',18);
+xlabel(xlabel1,'FontName','Arial','FontSize',18);
+ylabel(ylabel1,'FontName','Arial','FontSize',18);

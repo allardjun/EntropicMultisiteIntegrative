@@ -190,25 +190,39 @@ xlabel('Kinase Phosphatase ratio (ratio of intrinsic rate)');
 
 skip = 1;
 
+stupid = 2;
+colours= cool(numel(paramOuterArray)+2*stupid); 
+colours = colours((stupid+1):(end-stupid),:);
 
 figure(104); clf;
+
+pos = get(gcf, 'position');
+set(gcf,'units','centimeters','position',[pos(1),pos(2),15,12]);
 
 subplot(2,1,1); hold on; box on;
 
 title('Sweep over \lambda_Z<1, with \lambda_K=1.2')
 
-plot(KPRatioArray, PSSArray(:,1:skip:end));
+for iParamOuter=1:skip:numel(paramOuterArray)
+    plot(KPRatioArray(1:skip:end), PSSArray(:,iParamOuter),'color',colours(iParamOuter,:));
+end
 set(gca,'xscale','log');
-xlabel('Kinase Phosphatase ratio (ratio of intrinsic rate)');
-ylabel('Number phosphorylation (out of 10)')
+xlabel1 = ('Kinase Phosphatase ratio (ratio of intrinsic rate)');
+ylabel1 = ('Number phosphorylation (out of 10)');
 
 legend(num2str(paramArray(1:skip:end)','%3.2f'),'location','southeast')
+
+set(gca,'FontName','Arial','FontSize',18);
+xlabel(xlabel1,'FontName','Arial','FontSize',18);
+ylabel(ylabel1,'FontName','Arial','FontSize',18);
 
 subplot(2,1,2); hold on; box on;
 plot(KPRatioArray, ZSSArray(:,1:skip:end));
 set(gca,'xscale','log');
-ylabel('Number of ZAP70 bound (out of 10)')
-xlabel('Kinase Phosphatase ratio (ratio of intrinsic rate)');
+ylabel1 = ('Number of ZAP70 bound (out of 10)')
+xlabel1 = ('Kinase Phosphatase ratio (ratio of intrinsic rate)');
  
 
-
+set(gca,'FontName','Arial','FontSize',18);
+xlabel(xlabel1,'FontName','Arial','FontSize',18);
+ylabel(ylabel1,'FontName','Arial','FontSize',18);
