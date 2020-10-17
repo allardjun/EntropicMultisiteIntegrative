@@ -1,4 +1,5 @@
-% Integrative model for Lara
+% Integrative model for nonlinear effects in TCR signaling
+% Clemens Dushek Allard 2020
 
 lambdaKArray = 1:0.05:2.0;
 lambdaZArray = 1.0:-0.1:0.5;
@@ -18,8 +19,7 @@ ZSSArray          = zeros(numel(kF0Array),numel(paramArray));
 
 %figure(4);clf(4);
 %figure(5);clf(5);
-
-figure(31);clf(31);
+%figure(31);clf(31);
 
 iParamOuter=1;
 
@@ -190,9 +190,9 @@ xlabel('Kinase Phosphatase ratio (ratio of intrinsic rate)');
 
 skip = 1;
 
-stupid = 2;
-colours= cool(numel(paramOuterArray)+2*stupid); 
-colours = colours((stupid+1):(end-stupid),:);
+uglyColors = 2;
+colours= cool(numel(paramArray)+2*uglyColors); 
+colours = colours((uglyColors+1):(end-uglyColors),:);
 
 figure(104); clf;
 
@@ -203,10 +203,10 @@ subplot(2,1,1); hold on; box on;
 
 title('Sweep over \lambda_Z<1, with \lambda_K=1.2')
 
-for iParamOuter=1:skip:numel(paramOuterArray)
-    plot(KPRatioArray(1:skip:end), PSSArray(:,iParamOuter),'color',colours(iParamOuter,:));
+for iParam=1:skip:numel(paramArray)
+    plot(KPRatioArray(1:skip:end), PSSArray(:,iParam),'color',colours(iParam,:));
 end
-set(gca,'xscale','log');
+set(gca,'xscale','log', 'xlim',[1e-4,1e4],'xtick',10.^(-4:2:4));
 xlabel1 = ('Kinase Phosphatase ratio (ratio of intrinsic rate)');
 ylabel1 = ('Number phosphorylation (out of 10)');
 
@@ -218,10 +218,12 @@ ylabel(ylabel1,'FontName','Arial','FontSize',18);
 
 subplot(2,1,2); hold on; box on;
 plot(KPRatioArray, ZSSArray(:,1:skip:end));
-set(gca,'xscale','log');
-ylabel1 = ('Number of ZAP70 bound (out of 10)')
+for iParam=1:skip:numel(paramArray)
+    plot(KPRatioArray(1:skip:end), ZSSArray(:,iParam),'color',colours(iParam,:));
+end
+set(gca,'xscale','log', 'xlim',[1e-4,1e4],'xtick',10.^(-4:2:4));
+ylabel1 = ('Number of ZAP70 bound (out of 10)');
 xlabel1 = ('Kinase Phosphatase ratio (ratio of intrinsic rate)');
- 
 
 set(gca,'FontName','Arial','FontSize',18);
 xlabel(xlabel1,'FontName','Arial','FontSize',18);

@@ -18,8 +18,7 @@ nH_thresh_P_Array = zeros(numel(paramArray),numel(paramOuterArray));
 
 %figure(4);clf(4);
 %figure(5);clf(5);
-
-figure(31);clf(31);
+%figure(31);clf(31);
 
 if(0) % option whether or not to perform simulation
     
@@ -232,10 +231,9 @@ set(gca,'ylim',[2^-1,2^3],'ytick',[0.5 1 2 4 8]);
 
 % --- RENDER -----
 
-
-stupid = 2;
-colours= hot(numel(paramOuterArray)+2*stupid); 
-colours = colours((stupid+1):(end-stupid),:);
+stupidColors = 2;
+colours= hot(numel(paramOuterArray)+2*stupidColors); 
+colours = colours((stupidColors+1):(end-stupidColors),:);
 
 % --- EC ratio definition  -----
 figure(103); clf; hold on; box on;

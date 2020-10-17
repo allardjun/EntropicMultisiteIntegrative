@@ -1,4 +1,5 @@
-% Integrative model for Lara
+% Integrative model for nonlinear effects in TCR signaling
+% Clemens Dushek Allard 2020
 
 lambdaKArray = 1:0.05:2.0;%1.5;
 lambdaZArray = 1.0:-0.1:0.5;
@@ -18,8 +19,7 @@ ZSSArray          = zeros(numel(kF0Array),numel(paramArray));
 
 %figure(4);clf(4);
 %figure(5);clf(5);
-
-figure(21);clf(21);
+%figure(21);clf(21);
 
 iParamOuter=1;
 
@@ -191,24 +191,42 @@ xlabel('Kinase Phosphatase ratio (ratio of intrinsic rate)');
 
 skip = 4;
 
+uglyColors = 2;
+colours= cool(numel(paramArray)+2*uglyColors); 
+colours = colours((uglyColors+1):(end-uglyColors),:);
+
 figure(101); clf;
+
+pos = get(gcf, 'position');
+set(gcf,'units','centimeters','position',[pos(1),pos(2),15,12]);
 
 subplot(2,1,1); hold on; box on;
 
 title('Sweep over \lambda_K>1, with \lambda_Z=1')
 
-plot(KPRatioArray, PSSArray(:,1:skip:end));
-set(gca,'xscale','log');
-xlabel('Kinase Phosphatase ratio (ratio of intrinsic rate)');
-ylabel('Number phosphorylation (out of 10)')
+for iParam=1:skip:numel(paramArray)
+    plot(KPRatioArray(1:skip:end), PSSArray(1:skip:end,iParam),'color',colours(iParam,:));
+end
+set(gca,'xscale','log', 'xlim',[1e-4,1e4],'xtick',10.^(-4:2:4));
+xlabel1 = ('Kinase Phosphatase ratio (ratio of intrinsic rate)');
+ylabel1 = ('Number phosphorylation (out of 10)');
 
 legend(num2str(paramArray(1:skip:end)','%3.2f'),'location','southeast')
 
+set(gca,'FontName','Arial','FontSize',18);
+xlabel(xlabel1,'FontName','Arial','FontSize',18);
+ylabel(ylabel1,'FontName','Arial','FontSize',18);
+
 subplot(2,1,2); hold on; box on;
 plot(KPRatioArray, ZSSArray(:,1:skip:end));
-set(gca,'xscale','log');
-ylabel('Number of ZAP70 bound (out of 10)')
-xlabel('Kinase Phosphatase ratio (ratio of intrinsic rate)');
- 
+for iParam=1:skip:numel(paramArray)
+    plot(KPRatioArray(1:skip:end), ZSSArray(1:skip:end,iParam),'color',colours(iParam,:));
+end
+set(gca,'xscale','log', 'xlim',[1e-4,1e4],'xtick',10.^(-4:2:4));
+ylabel1 = ('Number of ZAP70 bound (out of 10)');
+xlabel1 = ('Kinase Phosphatase ratio (ratio of intrinsic rate)');
 
+set(gca,'FontName','Arial','FontSize',18);
+xlabel(xlabel1,'FontName','Arial','FontSize',18);
+ylabel(ylabel1,'FontName','Arial','FontSize',18);
 
