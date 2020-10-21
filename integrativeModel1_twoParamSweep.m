@@ -231,9 +231,9 @@ set(gca,'ylim',[2^-1,2^3],'ytick',[0.5 1 2 4 8]);
 
 % --- RENDER -----
 
-stupidColors = 2;
-colours= hot(numel(paramOuterArray)+2*stupidColors); 
-colours = colours((stupidColors+1):(end-stupidColors),:);
+uglyColors = 0;
+colours= cool(numel(paramOuterArray)+2*uglyColors); 
+colours = colours((uglyColors+1):(end-uglyColors),:);
 
 % --- EC ratio definition  -----
 figure(103); clf; hold on; box on;

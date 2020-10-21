@@ -23,7 +23,7 @@ ZSSArray          = zeros(numel(kF0Array),numel(paramArray));
 
 iParamOuter=1;
 
-if(1) % option whether or not to perform simulation
+if(0) % option whether or not to perform simulation
     
     
     for iParam=1:numel(paramArray) % loop through parameter
@@ -192,20 +192,22 @@ xlabel('Kinase Phosphatase ratio (ratio of intrinsic rate)');
 skip = 4;
 
 uglyColors = 2;
-colours= cool(numel(paramArray)+2*uglyColors); 
+colours= spring(numel(paramArray)+2*uglyColors); 
 colours = colours((uglyColors+1):(end-uglyColors),:);
+%colours = colours(end:-1:1,:);
+
 
 figure(101); clf;
 
 pos = get(gcf, 'position');
-set(gcf,'units','centimeters','position',[pos(1),pos(2),15,12]);
+set(gcf,'units','centimeters','position',[pos(1),pos(2),15,15]);
 
 subplot(2,1,1); hold on; box on;
 
 title('Sweep over \lambda_K>1, with \lambda_Z=1')
 
 for iParam=1:skip:numel(paramArray)
-    plot(KPRatioArray(1:skip:end), PSSArray(1:skip:end,iParam),'color',colours(iParam,:));
+    plot(KPRatioArray(1:skip:end), PSSArray(1:skip:end,iParam),'color',colours(iParam,:),'linewidth',2);
 end
 set(gca,'xscale','log', 'xlim',[1e-4,1e4],'xtick',10.^(-4:2:4));
 xlabel1 = ('Kinase Phosphatase ratio (ratio of intrinsic rate)');
@@ -220,7 +222,7 @@ ylabel(ylabel1,'FontName','Arial','FontSize',18);
 subplot(2,1,2); hold on; box on;
 plot(KPRatioArray, ZSSArray(:,1:skip:end));
 for iParam=1:skip:numel(paramArray)
-    plot(KPRatioArray(1:skip:end), ZSSArray(1:skip:end,iParam),'color',colours(iParam,:));
+    plot(KPRatioArray(1:skip:end), ZSSArray(1:skip:end,iParam),'color',colours(iParam,:),'linewidth',2);
 end
 set(gca,'xscale','log', 'xlim',[1e-4,1e4],'xtick',10.^(-4:2:4));
 ylabel1 = ('Number of ZAP70 bound (out of 10)');
